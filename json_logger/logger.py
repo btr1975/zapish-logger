@@ -1,6 +1,8 @@
 """
 The JSON logger
 """
+from typing import List, Dict
+import json
 import logging
 import sys
 
@@ -56,3 +58,36 @@ def add_console_logger(root_logger: logging.Logger) -> None:
     formatter = logging.Formatter(fmt=SCHEMA)
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
+
+
+def process_log_file(data: str) -> List[Dict[str, str]]:
+    """Function that converts log entries to dicts and appends to list
+
+    :type data: String
+    :param data: The log data
+
+    :rtype: List[Dict[str, str]]
+    :returns: Te log data as python objects
+    """
+    final_data = []
+    data_split = data.splitlines()
+    for line in data_split:
+        final_data.append(json.loads(line))
+
+    return final_data
+
+
+def read_log_file(path: str) -> List[Dict[str, str]]:
+    """Function that reads log data and converts log entries to dicts and appends to list
+
+    :type path: String
+    :param path: The full path to the log file Example: /tmp/some_log.log
+
+    :rtype: List[Dict[str, str]]
+    :returns: Te log data as python objects
+    """
+
+    with open(path, 'r', encoding='utf-8') as file:
+        log_file = file.read()
+
+    return process_log_file(log_file)
