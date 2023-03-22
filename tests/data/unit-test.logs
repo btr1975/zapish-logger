@@ -1,0 +1,2 @@
+{"level": "WARNING", "ts": "2023-03-21 21:11:19,555", "caller": "unit-test", "msg": "one"}
+{"level": "WARNING", "ts": "2023-03-21 21:11:19,555", "caller": "unit-test", "msg": "two"}
