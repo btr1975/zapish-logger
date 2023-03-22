@@ -40,7 +40,6 @@ author = about['__author__']
 extensions = ['sphinx.ext.todo',
               'sphinx.ext.viewcode',
               'sphinx.ext.autodoc',
-              'myst_parser',
               'sphinxcontrib.mermaid',
 ]
 
@@ -96,10 +95,3 @@ html_style = 'css/my_theme.css'
 # This is used fpr making a PDF using rinohtype
 # See https://www.mos6581.org/rinohtype/master/sphinx.html
 rinoh_documents = [{'doc': 'index', 'target': f'{about["__title__"]}'}]
-
-# This is used for render markdown using myst-parser
-# see https://www.sphinx-doc.org/en/master/usage/markdown.html
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
-}
