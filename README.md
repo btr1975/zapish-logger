@@ -5,6 +5,7 @@
 
 [![Downloads](https://pepy.tech/badge/zapish-logger)](https://pepy.tech/project/zapish-logger)
 [![Supported Versions](https://img.shields.io/pypi/pyversions/zapish-logger.svg)](https://pypi.org/project/zapish-logger)
+[![Documentation Status](https://readthedocs.org/projects/zapish-logger/badge/?version=latest)](https://zapish-logger.readthedocs.io/en/latest/?badge=latest)
 
 
 # zapish-logger
