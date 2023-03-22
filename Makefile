@@ -17,7 +17,7 @@ coverage:
 	@pytest --cov --cov-report=html -vvv
 
 pylint:
-	@pylint json_logger/
+	@pylint zapish_logger/
 
 pytest:
 	@pytest --cov -vvv
