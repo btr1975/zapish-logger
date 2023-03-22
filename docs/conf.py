@@ -40,7 +40,6 @@ author = about['__author__']
 extensions = ['sphinx.ext.todo',
               'sphinx.ext.viewcode',
               'sphinx.ext.autodoc',
-              'sphinxcontrib.mermaid',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
