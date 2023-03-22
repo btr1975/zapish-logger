@@ -1,3 +1,12 @@
+| BRANCH  | STATUS                                                                                                                                                                                                                                          |
+|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| main    | [![Unit-Testing, Coverage, Linting](https://github.com/btr1975/zapish-logger/actions/workflows/test-coverage-lint.yml/badge.svg?branch=main)](https://github.com/btr1975/zapish-logger/actions/workflows/test-coverage-lint.yml)    |
+| develop | [![Unit-Testing, Coverage, Linting](https://github.com/btr1975/zapish-logger/actions/workflows/test-coverage-lint.yml/badge.svg?branch=develop)](https://github.com/btr1975/zapish-logger/actions/workflows/test-coverage-lint.yml) |
+
+[![Downloads](https://pepy.tech/badge/zapish-logger)](https://pepy.tech/project/zapish-logger)
+[![Supported Versions](https://img.shields.io/pypi/pyversions/zapish-logger.svg)](https://pypi.org/project/zapish-logger)
+
+
 # zapish-logger
 
 ## Description
