@@ -10,7 +10,8 @@ json-logger documentation
    :maxdepth: 2
    :caption: Contents:
 
-   source/index
+   source/modules/modules
+   source/examples/index
 
 Indices and tables
 ==================
