@@ -10,7 +10,7 @@ with open(os.path.join(base_dir, 'zapish_logger', 'version.py'), 'r', encoding='
     exec(f.read(), about)
 
 packages = [
-    'json_logger'
+    'zapish_logger'
 ]
 
 install_requires = [
