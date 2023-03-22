@@ -6,7 +6,7 @@ with open(os.path.join(base_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 about = {}
-with open(os.path.join(base_dir, 'json_logger', 'version.py'), 'r', encoding='utf-8') as f:
+with open(os.path.join(base_dir, 'zapish_logger', 'version.py'), 'r', encoding='utf-8') as f:
     exec(f.read(), about)
 
 packages = [

@@ -3,4 +3,4 @@ command_line= -m pytest -vvv
 
 [report]
 include =
-    json_logger/*
+    zapish_logger/*

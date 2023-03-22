@@ -6,7 +6,7 @@ New Console Logger
 
 ..  code-block:: python
 
-   from json_logger import console_logger
+   from zapish_logger import console_logger
 
 
    logger = console_logger('great-logger')

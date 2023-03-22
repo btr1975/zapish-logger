@@ -6,7 +6,7 @@ Read Logs
 
 ..  code-block:: python
 
-   from json_logger import read_log_file
+   from zapish_logger import read_log_file
 
 
    data = read_log_file('./logs.log')
@@ -19,7 +19,7 @@ Parse Logs
 ..  code-block:: python
 
    import re
-   from json_logger import read_log_file
+   from zapish_logger import read_log_file
 
 
    data = read_log_file('./logs.log')

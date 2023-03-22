@@ -1,6 +1,6 @@
 import os
 import pytest
-from json_logger import file_logger, read_log_file, add_console_logger, console_logger
+from zapish_logger import file_logger, read_log_file, add_console_logger, console_logger
 
 
 def test_file_logger(tmp_path):

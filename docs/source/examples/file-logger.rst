@@ -6,7 +6,7 @@ New File Logger
 
 ..  code-block:: python
 
-   from json_logger import file_logger
+   from zapish_logger import file_logger
 
 
    logger = file_logger('./logs.log', 'great-logger')
@@ -19,7 +19,7 @@ Add Console Output Also
 
 ..  code-block:: python
 
-   from json_logger import file_logger, add_console_logger
+   from zapish_logger import file_logger, add_console_logger
 
 
    logger = file_logger('./logs.log', 'great-logger')

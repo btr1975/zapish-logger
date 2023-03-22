@@ -6,7 +6,7 @@ Change Logging Level
 ..  code-block:: python
 
    import logging
-   from json_logger import console_logger
+   from zapish_logger import console_logger
 
 
    logger = console_logger('great-logger')
