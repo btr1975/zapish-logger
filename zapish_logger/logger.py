@@ -50,6 +50,8 @@ def add_console_logger(root_logger: logging.Logger) -> None:
 
     :rtype: None
     :returns: Nothing it adds a console logger
+
+    :raises TypeError: If root_logger is not of type logging.Logger
     """
     if not isinstance(root_logger, logging.Logger):
         raise TypeError(f'root_logger must be of type logging.Logger but received a {type(root_logger)}')
