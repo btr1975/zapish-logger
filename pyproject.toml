@@ -8,7 +8,6 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "zapish-logger"
 dynamic = ["version", "readme", "dependencies"]
-# version = "1.0.2"
 requires-python = ">=3.8"
 description = "A simple logger that logs in a JSON format inspired by go zap"
 keywords = [
@@ -23,8 +22,6 @@ maintainers = [
   {name = "Benjamin P. Trachtenberg", email = "e_ben_75-python@yahoo.com"},
 ]
 license = {file = "LICENSE"}
-# dependencies = [
-# ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
@@ -48,10 +45,16 @@ Documentation = "https://zapish-logger.readthedocs.io/en/latest/"
 Source = "https://github.com/btr1975/zapish-logger"
 Tracker = "https://github.com/btr1975/zapish-logger/issues"
 
-[tool.setuptools]
-packages = [
-    "zapish_logger",
+[tool.setuptools.packages.find]
+include = [
+    "zapish_logger*",
 ]
+
+# Add or remove file extensions to include the data
+[tool.setuptools.package-data]
+"*" = ["*.txt", "*.rst"]
+
+[tool.setuptools]
 zip-safe = false
 
 [tool.setuptools.dynamic]
@@ -65,7 +68,7 @@ universal = true
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
 markers = [
-    { place_holder = "marks tests as place_holder (deselect with -m 'not place_holder')" },
+    "place_holder: marks tests as place_holder (deselect with -m 'not place_holder')",
 ]
 
 [tool.coverage.run]
