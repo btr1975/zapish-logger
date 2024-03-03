@@ -4,13 +4,14 @@ The JSON logger
 from typing import List, Dict, Optional
 import json
 import logging
+import logging.config
 import sys
 
 
 SCHEMA = '{"level": "%(levelname)s", "ts": "%(asctime)s", "caller": "%(name)s", "msg": "%(message)s"}'
 
 
-class _ExcludeErrorsFilter(logging.Filter):
+class _ExcludeErrorsFilter(logging.Filter):  # pylint: disable=too-few-public-methods
     """Callback class to exclude ERROR level records"""
 
     def filter(self, record: logging.LogRecord) -> bool:
@@ -203,8 +204,9 @@ def file_logger(path: str, name: str) -> logging.Logger:
     :returns: The logger
     """
     this_logger = logging.getLogger(name)
-    logging.basicConfig(format=SCHEMA, filename=path)
-    logging.getLogger().setLevel(logging.INFO)
+    logging_config = LoggingConfig()
+    logging_config.add_file_handler(path=path)
+    logging.config.dictConfig(logging_config.get_config())
     return this_logger
 
 
