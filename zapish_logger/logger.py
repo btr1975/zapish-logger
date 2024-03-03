@@ -110,21 +110,17 @@ class LoggingConfig:
             formatter = self._formatter_option
 
         stderr_handler = {
-            'console_stderr': {
-                'class': 'logging.StreamHandler',
-                'level': 'ERROR',
-                'formatter': formatter,
-                'stream': sys.stderr
-            }
+            'class': 'logging.StreamHandler',
+            'level': 'ERROR',
+            'formatter': formatter,
+            'stream': sys.stderr
         }
         stdout_handler = {
-            'console_stdout': {
-                'class': 'logging.StreamHandler',
-                'level': 'DEBUG',
-                'formatter': formatter,
-                'filters': ['exclude_errors'],
-                'stream': sys.stdout
-            }
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': formatter,
+            'filters': ['exclude_errors'],
+            'stream': sys.stdout
         }
 
         self._config['handlers']['console_stderr'] = stderr_handler
@@ -192,61 +188,74 @@ class LoggingConfig:
         return self._config
 
 
-def file_logger(path: str, name: str) -> logging.Logger:
+def file_logger(path: str, name: str,
+                level: Optional[str] = 'INFO', log_format: Optional[str] = 'json') -> logging.Logger:
     """Function to get a file logger
 
     :type path: String
     :param path: The full path to the log file Example: /tmp/some_log.log
+    :type level: Optional[str] = 'INFO'
+    :param level: To set the logging level
     :type name: String
     :param name: The name of the logger
+    :type log_format: Optional[str] = 'json'
+    :param log_format: Set the log format
 
     :rtype: logging.Logger
     :returns: The logger
     """
-    this_logger = logging.getLogger(name)
-    logging_config = LoggingConfig()
-    logging_config.add_file_handler(path=path)
+    logging_config = LoggingConfig(log_format=log_format)
+    logging_config.add_file_handler(path=path, level=level)
     logging.config.dictConfig(logging_config.get_config())
+    this_logger = logging.getLogger(name)
     return this_logger
 
 
-def console_logger(name: str) -> logging.Logger:
+def console_logger(name: str, log_format: Optional[str] = 'json') -> logging.Logger:
     """Function to get a console logger
 
     :type name: String
     :param name: The name of the logger
+    :type log_format: Optional[str] = 'json'
+    :param log_format: Set the log format
 
     :rtype: logging.Logger
     :returns: The logger
     """
+    logging_config = LoggingConfig(log_format=log_format)
+    logging_config.add_console_handler()
+    logging.config.dictConfig(logging_config.get_config())
     this_logger = logging.getLogger(name)
-    logging.basicConfig(format=SCHEMA, stream=sys.stdout)
-    logging.getLogger().setLevel(logging.INFO)
     return this_logger
 
 
-def add_console_logger(root_logger: logging.Logger) -> None:
-    """Function to add a console logger
+def file_and_console_logger(path: str, name: str,
+                            level: Optional[str] = 'INFO', log_format: Optional[str] = 'json') -> logging.Logger:
+    """Function to get a file and console logger
 
-    :type root_logger: logging.Logger
-    :param root_logger: The logger to add console logger to
+    :type path: String
+    :param path: The full path to the log file Example: /tmp/some_log.log
+    :type level: Optional[str] = 'INFO'
+    :param level: To set the logging level
+    :type name: String
+    :param name: The name of the logger
+    :type log_format: Optional[str] = 'json'
+    :param log_format: Set the log format
 
-    :rtype: None
-    :returns: Nothing it adds a console logger
-
-    :raises TypeError: If root_logger is not of type logging.Logger
+    :rtype: logging.Logger
+    :returns: The logger
     """
-    if not isinstance(root_logger, logging.Logger):
-        raise TypeError(f'root_logger must be of type logging.Logger but received a {type(root_logger)}')
-
-    console_handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter(fmt=SCHEMA)
-    console_handler.setFormatter(formatter)
-    root_logger.addHandler(console_handler)
+    logging_config = LoggingConfig(log_format=log_format)
+    logging_config.add_file_handler(path=path, level=level)
+    logging_config.add_console_handler()
+    logging.config.dictConfig(logging_config.get_config())
+    this_logger = logging.getLogger(name)
+    return this_logger
 
 
 def process_log_file(data: str) -> List[Dict[str, str]]:
-    """Function that converts log entries to dicts and appends to list
+    """Function that converts log entries to dicts and appends to list, also handles non-json log entries
+    the key will be 'msg' if the log entry is not json
 
     :type data: String
     :param data: The log data
@@ -257,7 +266,11 @@ def process_log_file(data: str) -> List[Dict[str, str]]:
     final_data = []
     data_split = data.splitlines()
     for line in data_split:
-        final_data.append(json.loads(line))
+        try:
+            final_data.append(json.loads(line))
+
+        except json.JSONDecodeError:
+            final_data.append({'msg': line})
 
     return final_data
 
