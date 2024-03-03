@@ -15,7 +15,7 @@ IF "%1" == "coverage" (
 )
 
 IF "%1" == "pylint" (
-    pylint json_logger\
+    pylint zapish_logger\
     GOTO END
 )
 
