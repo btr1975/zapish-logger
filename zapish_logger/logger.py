@@ -71,7 +71,8 @@ class LoggingConfig:
             'root': {
                 'level': 'NOTSET',
                 'handlers': []
-            }
+            },
+            'disable_existing_loggers': False
         }
 
         self._formatter_option = self._log_format(name=log_format)
