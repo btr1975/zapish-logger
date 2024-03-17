@@ -6,6 +6,7 @@ import json
 import logging
 import logging.config
 import sys
+import re
 
 
 SCHEMA = '{"level": "%(levelname)s", "ts": "%(asctime)s", "caller": "%(name)s", "msg": "%(message)s"}'
@@ -31,6 +32,8 @@ class LoggingConfig:
 
     :type log_format: Optional[str] = 'json'
     :param log_format: Set the default log format
+    :type custom_logging_formatters: Optional[Dict[str, str]] = None
+    :param custom_logging_formatters: Logging formatters example: {'the_name': 'the format'}
 
     :rtype: None
     :returns: Nothing
@@ -46,6 +49,11 @@ class LoggingConfig:
             'simple': {
                 'format': '%(asctime)s: %(name)s - %(levelname)s - %(message)s'
             }
+        },
+        'clean': {
+            'clean': {
+                'format': '[%(asctime)s] %(levelname)s:%(name)s - %(message)s'
+            }
         }
     }
 
@@ -55,10 +63,25 @@ class LoggingConfig:
         'WARNING',
         'ERROR',
         'CRITICAL',
-        'NOTSET'
+        'NOTSET',
     )
 
-    def __init__(self, log_format: Optional[str] = 'json') -> None:
+    FILE_SIZE_OPTIONS = {
+        'B': 1,
+        'K': 1000,
+        'M': 1000000,
+        'G': 1000000000,
+    }
+
+    def __init__(self, log_format: Optional[str] = 'json',
+                 custom_logging_formatters: Optional[Dict[str, str]] = None) -> None:
+        if custom_logging_formatters:
+            self.__add_formatters(logging_formatters=custom_logging_formatters)
+
+        all_formatters = {}
+        for value in self.FORMAT_OPTIONS.values():
+            all_formatters.update(value)
+
         self._config = {
             'version': 1,
             'filters': {
@@ -66,7 +89,7 @@ class LoggingConfig:
                     '()': _ExcludeErrorsFilter
                 }
             },
-            'formatters': self.FORMAT_OPTIONS.get(self._log_format(name=log_format)),
+            'formatters': all_formatters,
             'handlers': {},
             'root': {
                 'level': 'NOTSET',
@@ -92,6 +115,19 @@ class LoggingConfig:
             raise ValueError(f'"{name}" is not a log format option.  the options are "{self.FORMAT_OPTIONS.keys()}"')
 
         return name
+
+    @classmethod
+    def __add_formatters(cls, logging_formatters: Dict[str, str]) -> None:
+        """Protected method to add custom formatters
+
+        :type logging_formatters: Dict[str, str]
+        :param logging_formatters: A formatter example: {'the_name': 'the format'}
+
+        :rtype: None
+        :returns: Nothing it adds fomatters
+        """
+        for name, logging_format in logging_formatters.items():
+            cls.FORMAT_OPTIONS[name] = {f'{name}': {'format': logging_format}}
 
     def add_console_handler(self, log_format: Optional[str] = None) -> None:
         """Add a console logger
@@ -128,6 +164,64 @@ class LoggingConfig:
         self._config['root']['handlers'].append('console_stderr')
         self._config['handlers']['console_stdout'] = stdout_handler
         self._config['root']['handlers'].append('console_stdout')
+
+    def add_rotating_file_handler(self, path: str, level: Optional[str] = 'INFO',  # pylint: disable=too-many-arguments
+                                  log_format: Optional[str] = None, max_file_size: Optional[str] = '5M',
+                                  backup_count: Optional[int] = 3) -> None:
+        """Add a rotating file logger
+
+        :type path: String
+        :param path: The full path to the log file Example: /tmp/some_log.log
+        :type level: Optional[str] = 'INFO'
+        :param level: To set the logging level
+        :type log_format: Optional[str] = None
+        :param log_format: To override the instantiated log_format
+        :type max_file_size: max_file_size: Optional[str] = '5M'
+        :param max_file_size: Maximum file size before rotation
+        :type backup_count: backup_count: Optional[int] = 3
+        :param backup_count: The number of backup files to keep
+
+        :rtype: None
+        :returns: Nothing it adds a file logger
+
+        :raises ValueError: If level is not a valid option
+        :raises ValueError: If log_format is not a valid format
+        :raises ValueError: If max_file_size is not formatted properly
+        :raises TypeError: If backup_count is not an integer
+        """
+        max_file_size_regex = re.compile(r'^[1-9]\d*(B|K|M|G)$')
+
+        if log_format:
+            formatter = self._log_format(name=log_format)
+
+        else:
+            formatter = self._formatter_option
+
+        if level not in self.LEVEL_OPTIONS:
+            raise ValueError(f'"{level}" is not a valid logging level.  the valid levels are "{self.LEVEL_OPTIONS}"')
+
+        if not max_file_size_regex.match(max_file_size.upper()):
+            raise ValueError(f'"{max_file_size_regex}" is not a valid file size. it should be a number with 1 '
+                             f'of the following B, K, M, G example: 1b, 20B, 5K, 15k')
+
+        if not isinstance(backup_count, int):
+            raise TypeError('backup count must be an integer.')
+
+        max_file_size_int = int(max_file_size[:-1])
+        max_file_size_opt = max_file_size[-1:].upper()
+
+        handler = {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'level': level,
+            'formatter': formatter,
+            'filename': path,
+            'encoding': 'utf8',
+            'maxBytes': max_file_size_int * self.FILE_SIZE_OPTIONS.get(max_file_size_opt),
+            'backupCount': backup_count
+        }
+
+        self._config['handlers']['file'] = handler
+        self._config['root']['handlers'].append('file')
 
     def add_file_handler(self, path: str, level: Optional[str] = 'INFO', log_format: Optional[str] = None) -> None:
         """Add a file logger
@@ -206,7 +300,7 @@ def file_logger(path: str, name: str,
     :returns: The logger
     """
     logging_config = LoggingConfig(log_format=log_format)
-    logging_config.add_file_handler(path=path, level=level)
+    logging_config.add_rotating_file_handler(path=path, level=level)
     logging.config.dictConfig(logging_config.get_config())
     this_logger = logging.getLogger(name)
     return this_logger
@@ -232,7 +326,7 @@ def console_logger(name: str, log_format: Optional[str] = 'json') -> logging.Log
 
 def file_and_console_logger(path: str, name: str,
                             level: Optional[str] = 'INFO', log_format: Optional[str] = 'json') -> logging.Logger:
-    """Function to get a file and console logger
+    """Function to get a rotating file and console logger
 
     :type path: String
     :param path: The full path to the log file Example: /tmp/some_log.log
@@ -247,8 +341,24 @@ def file_and_console_logger(path: str, name: str,
     :returns: The logger
     """
     logging_config = LoggingConfig(log_format=log_format)
-    logging_config.add_file_handler(path=path, level=level)
+    logging_config.add_rotating_file_handler(path=path, level=level)
     logging_config.add_console_handler()
+    logging.config.dictConfig(logging_config.get_config())
+    this_logger = logging.getLogger(name)
+    return this_logger
+
+
+def custom_logger(logging_config: LoggingConfig, name: str) -> logging.Logger:
+    """Function to get a custom logger
+
+    :type logging_config: zapish_logger.LoggingConfig
+    :param logging_config: The logging config
+    :type name: String
+    :param name: The name of the logger
+
+    :rtype: logging.Logger
+    :returns: The logger
+    """
     logging.config.dictConfig(logging_config.get_config())
     this_logger = logging.getLogger(name)
     return this_logger
