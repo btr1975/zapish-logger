@@ -13,21 +13,6 @@ New File Logger
 
    logger.info("HELLO")
 
-
-Add Console Output Also
-~~~~~~~~~~~~~~~~~~~~~~~
-
-..  code-block:: python
-
-   from zapish_logger import file_logger, add_console_logger
-
-
-   logger = file_logger('./logs.log', 'great-logger')
-
-   add_console_logger(logger)
-
-   logger.info("HELLO")
-
 Example Log
 ~~~~~~~~~~~
 

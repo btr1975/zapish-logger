@@ -7,5 +7,7 @@ Examples
 
    file-logger
    console-logger
+   file-and-console-logger
+   custom-logger
    change-logging-level
    reading-parsing
