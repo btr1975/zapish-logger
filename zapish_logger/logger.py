@@ -152,7 +152,7 @@ class LoggingConfig:
         self._config["handlers"]["console_stdout"] = stdout_handler
         self._config["root"]["handlers"].append("console_stdout")
 
-    def add_rotating_file_handler(  # pylint: disable=too-many-arguments
+    def add_rotating_file_handler(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         path: str,
         level: Optional[str] = "INFO",
