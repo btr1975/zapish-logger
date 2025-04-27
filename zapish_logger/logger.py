@@ -1,6 +1,7 @@
 """
 The JSON logger
 """
+
 from typing import List, Dict, Optional
 import json
 import logging
@@ -40,41 +41,34 @@ class LoggingConfig:
     """
 
     FORMAT_OPTIONS = {
-        'json': {
-            'json': {
-                'format': '{"level": "%(levelname)s", "ts": "%(asctime)s", "caller": "%(name)s", "msg": "%(message)s"}'
+        "json": {
+            "json": {
+                "format": '{"level": "%(levelname)s", "ts": "%(asctime)s", "caller": "%(name)s", "msg": "%(message)s"}'
             }
         },
-        'simple': {
-            'simple': {
-                'format': '%(asctime)s: %(name)s - %(levelname)s - %(message)s'
-            }
-        },
-        'clean': {
-            'clean': {
-                'format': '[%(asctime)s] %(levelname)s:%(name)s - %(message)s'
-            }
-        }
+        "simple": {"simple": {"format": "%(asctime)s: %(name)s - %(levelname)s - %(message)s"}},
+        "clean": {"clean": {"format": "[%(asctime)s] %(levelname)s:%(name)s - %(message)s"}},
     }
 
     LEVEL_OPTIONS = (
-        'DEBUG',
-        'INFO',
-        'WARNING',
-        'ERROR',
-        'CRITICAL',
-        'NOTSET',
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+        "NOTSET",
     )
 
     FILE_SIZE_OPTIONS = {
-        'B': 1,
-        'K': 1000,
-        'M': 1000000,
-        'G': 1000000000,
+        "B": 1,
+        "K": 1000,
+        "M": 1000000,
+        "G": 1000000000,
     }
 
-    def __init__(self, log_format: Optional[str] = 'json',
-                 custom_logging_formatters: Optional[Dict[str, str]] = None) -> None:
+    def __init__(
+        self, log_format: Optional[str] = "json", custom_logging_formatters: Optional[Dict[str, str]] = None
+    ) -> None:
         if custom_logging_formatters:
             self.__add_formatters(logging_formatters=custom_logging_formatters)
 
@@ -83,24 +77,17 @@ class LoggingConfig:
             all_formatters.update(value)
 
         self._config = {
-            'version': 1,
-            'filters': {
-                'exclude_errors': {
-                    '()': _ExcludeErrorsFilter
-                }
-            },
-            'formatters': all_formatters,
-            'handlers': {},
-            'root': {
-                'level': 'NOTSET',
-                'handlers': []
-            },
-            'disable_existing_loggers': False
+            "version": 1,
+            "filters": {"exclude_errors": {"()": _ExcludeErrorsFilter}},
+            "formatters": all_formatters,
+            "handlers": {},
+            "root": {"level": "NOTSET", "handlers": []},
+            "disable_existing_loggers": False,
         }
 
         self._formatter_option = self._log_format(name=log_format)
 
-    def _log_format(self, name: str = 'json') -> str:
+    def _log_format(self, name: str = "json") -> str:
         """Protected method to validate and set the log format
 
         :type name: str = 'json'
@@ -127,7 +114,7 @@ class LoggingConfig:
         :returns: Nothing it adds fomatters
         """
         for name, logging_format in logging_formatters.items():
-            cls.FORMAT_OPTIONS[name] = {f'{name}': {'format': logging_format}}
+            cls.FORMAT_OPTIONS[name] = {f"{name}": {"format": logging_format}}
 
     def add_console_handler(self, log_format: Optional[str] = None) -> None:
         """Add a console logger
@@ -147,27 +134,32 @@ class LoggingConfig:
             formatter = self._formatter_option
 
         stderr_handler = {
-            'class': 'logging.StreamHandler',
-            'level': 'ERROR',
-            'formatter': formatter,
-            'stream': sys.stderr
+            "class": "logging.StreamHandler",
+            "level": "ERROR",
+            "formatter": formatter,
+            "stream": sys.stderr,
         }
         stdout_handler = {
-            'class': 'logging.StreamHandler',
-            'level': 'DEBUG',
-            'formatter': formatter,
-            'filters': ['exclude_errors'],
-            'stream': sys.stdout
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": formatter,
+            "filters": ["exclude_errors"],
+            "stream": sys.stdout,
         }
 
-        self._config['handlers']['console_stderr'] = stderr_handler
-        self._config['root']['handlers'].append('console_stderr')
-        self._config['handlers']['console_stdout'] = stdout_handler
-        self._config['root']['handlers'].append('console_stdout')
+        self._config["handlers"]["console_stderr"] = stderr_handler
+        self._config["root"]["handlers"].append("console_stderr")
+        self._config["handlers"]["console_stdout"] = stdout_handler
+        self._config["root"]["handlers"].append("console_stdout")
 
-    def add_rotating_file_handler(self, path: str, level: Optional[str] = 'INFO',  # pylint: disable=too-many-arguments
-                                  log_format: Optional[str] = None, max_file_size: Optional[str] = '5M',
-                                  backup_count: Optional[int] = 3) -> None:
+    def add_rotating_file_handler(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+        self,
+        path: str,
+        level: Optional[str] = "INFO",
+        log_format: Optional[str] = None,
+        max_file_size: Optional[str] = "5M",
+        backup_count: Optional[int] = 3,
+    ) -> None:
         """Add a rotating file logger
 
         :type path: String
@@ -189,7 +181,7 @@ class LoggingConfig:
         :raises ValueError: If max_file_size is not formatted properly
         :raises TypeError: If backup_count is not an integer
         """
-        max_file_size_regex = re.compile(r'^[1-9]\d*(B|K|M|G)$')
+        max_file_size_regex = re.compile(r"^[1-9]\d*(B|K|M|G)$")
 
         if log_format:
             formatter = self._log_format(name=log_format)
@@ -201,29 +193,31 @@ class LoggingConfig:
             raise ValueError(f'"{level}" is not a valid logging level.  the valid levels are "{self.LEVEL_OPTIONS}"')
 
         if not max_file_size_regex.match(max_file_size.upper()):
-            raise ValueError(f'"{max_file_size_regex}" is not a valid file size. it should be a number with 1 '
-                             f'of the following B, K, M, G example: 1b, 20B, 5K, 15k')
+            raise ValueError(
+                f'"{max_file_size_regex}" is not a valid file size. it should be a number with 1 '
+                f"of the following B, K, M, G example: 1b, 20B, 5K, 15k"
+            )
 
         if not isinstance(backup_count, int):
-            raise TypeError('backup count must be an integer.')
+            raise TypeError("backup count must be an integer.")
 
         max_file_size_int = int(max_file_size[:-1])
         max_file_size_opt = max_file_size[-1:].upper()
 
         handler = {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'level': level,
-            'formatter': formatter,
-            'filename': path,
-            'encoding': 'utf8',
-            'maxBytes': max_file_size_int * self.FILE_SIZE_OPTIONS.get(max_file_size_opt),
-            'backupCount': backup_count
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": level,
+            "formatter": formatter,
+            "filename": path,
+            "encoding": "utf8",
+            "maxBytes": max_file_size_int * self.FILE_SIZE_OPTIONS.get(max_file_size_opt),
+            "backupCount": backup_count,
         }
 
-        self._config['handlers']['file'] = handler
-        self._config['root']['handlers'].append('file')
+        self._config["handlers"]["file"] = handler
+        self._config["root"]["handlers"].append("file")
 
-    def add_file_handler(self, path: str, level: Optional[str] = 'INFO', log_format: Optional[str] = None) -> None:
+    def add_file_handler(self, path: str, level: Optional[str] = "INFO", log_format: Optional[str] = None) -> None:
         """Add a file logger
 
         :type path: String
@@ -249,15 +243,15 @@ class LoggingConfig:
             raise ValueError(f'"{level}" is not a valid logging level.  the valid levels are "{self.LEVEL_OPTIONS}"')
 
         handler = {
-            'class': 'logging.FileHandler',
-            'level': level,
-            'formatter': formatter,
-            'filename': path,
-            'encoding': 'utf8'
+            "class": "logging.FileHandler",
+            "level": level,
+            "formatter": formatter,
+            "filename": path,
+            "encoding": "utf8",
         }
 
-        self._config['handlers']['file'] = handler
-        self._config['root']['handlers'].append('file')
+        self._config["handlers"]["file"] = handler
+        self._config["root"]["handlers"].append("file")
 
     def _validate_handlers(self) -> None:
         """Validate if a handler has been added
@@ -267,11 +261,11 @@ class LoggingConfig:
 
         :raises KeyError: If handlers don't exist
         """
-        if not self._config['handlers']:
-            raise KeyError('no handlers have been added!')
+        if not self._config["handlers"]:
+            raise KeyError("no handlers have been added!")
 
-        if not self._config['root']['handlers']:
-            raise KeyError('no handlers have been added!')
+        if not self._config["root"]["handlers"]:
+            raise KeyError("no handlers have been added!")
 
     def get_config(self) -> dict:
         """Get the configuration
@@ -283,8 +277,9 @@ class LoggingConfig:
         return self._config
 
 
-def file_logger(path: str, name: str,
-                level: Optional[str] = 'INFO', log_format: Optional[str] = 'json') -> logging.Logger:
+def file_logger(
+    path: str, name: str, level: Optional[str] = "INFO", log_format: Optional[str] = "json"
+) -> logging.Logger:
     """Function to get a file logger
 
     :type path: String
@@ -306,7 +301,7 @@ def file_logger(path: str, name: str,
     return this_logger
 
 
-def console_logger(name: str, log_format: Optional[str] = 'json') -> logging.Logger:
+def console_logger(name: str, log_format: Optional[str] = "json") -> logging.Logger:
     """Function to get a console logger
 
     :type name: String
@@ -324,8 +319,9 @@ def console_logger(name: str, log_format: Optional[str] = 'json') -> logging.Log
     return this_logger
 
 
-def file_and_console_logger(path: str, name: str,
-                            level: Optional[str] = 'INFO', log_format: Optional[str] = 'json') -> logging.Logger:
+def file_and_console_logger(
+    path: str, name: str, level: Optional[str] = "INFO", log_format: Optional[str] = "json"
+) -> logging.Logger:
     """Function to get a rotating file and console logger
 
     :type path: String
@@ -381,7 +377,7 @@ def process_log_file(data: str) -> List[Dict[str, str]]:
             final_data.append(json.loads(line))
 
         except json.JSONDecodeError:
-            final_data.append({'msg': line})
+            final_data.append({"msg": line})
 
     return final_data
 
@@ -396,7 +392,7 @@ def read_log_file(path: str) -> List[Dict[str, str]]:
     :returns: Te log data as python objects
     """
 
-    with open(path, 'r', encoding='utf-8') as file:
+    with open(path, "r", encoding="utf-8") as file:
         log_file = file.read()
 
     return process_log_file(log_file)
