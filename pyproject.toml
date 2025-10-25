@@ -7,7 +7,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zapish-logger"
-dynamic = ["version", "readme"]
+dynamic = ["readme"]
+version = "1.1.2"
 requires-python = ">=3.9"
 description = "A simple logger that logs in a JSON format inspired by go zap"
 keywords = [
@@ -41,6 +42,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 dependencies = [
@@ -57,7 +59,7 @@ dev = [
     "sphinx>=7.4.7",
     "sphinx-rtd-theme>=3.0.2",
     "sphinxcontrib-mermaid>=1.0.0",
-    "tomli>=2.2.1",
+    "tomli>=2.2.1; python_version < '3.11'",
 ]
 
 [project.urls]
@@ -78,7 +80,6 @@ include = [
 zip-safe = false
 
 [tool.setuptools.dynamic]
-version = {attr = "zapish_logger.version.__version__"}
 readme = {file = "README.md", content-type = "text/markdown"}
 
 [tool.pytest.ini_options]
