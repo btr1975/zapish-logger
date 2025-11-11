@@ -1,7 +1,7 @@
 @ECHO OFF
 REM Makefile for project needs
 REM Author: Ben Trachtenberg
-REM Version: 2.0.0
+REM Version: 2.0.1
 REM
 
 IF "%1" == "all" (
@@ -12,6 +12,7 @@ IF "%1" == "all" (
 	uv run bandit -c pyproject.toml -r .
 	uv export --no-dev --no-emit-project --no-editable > requirements.txt
 	uv export --no-emit-project --no-editable > requirements-dev.txt
+	uv run mypy zapish_logger\
     GOTO END
 )
 
@@ -52,6 +53,11 @@ IF "%1" == "pip-export" (
     GOTO END
 )
 
+IF "%1" == "mypy" (
+	uv run mypy zapish_logger\
+    GOTO END
+)
+
 IF "%1" == "pdf" (
     uv run sphinx-build -b rinoh ./docs ./docs/_build/pdf
     GOTO END
@@ -67,6 +73,6 @@ IF "%1" == "pdf" (
 @ECHO     check-security        To run bandit
 @ECHO     pip-export            To export requirements.txt and requirements-dev.txt
 @ECHO     pdf                   To create PDF Docs
-
+@ECHO     mypy                  To run mypy
 
 :END

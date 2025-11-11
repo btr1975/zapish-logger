@@ -1,9 +1,9 @@
 # Makefile for project needs
 # Author: Ben Trachtenberg
-# Version: 2.0.0
+# Version: 2.0.1
 #
 
-.PHONY: info all build coverage format pylint pytest check-security pip-export pdf
+.PHONY: info all build coverage format pylint pytest check-security pip-export pdf mypy
 
 info:
 	@echo "make options"
@@ -17,8 +17,9 @@ info:
 	@echo "    check-security        To run bandit for security checks"
 	@echo "    pip-export            To export requirements.txt and requirements-dev.txt"
 	@echo "    pdf                   To create PDF Docs"
+	@echo "    mypy                  To run mypy"
 
-all: format pylint coverage check-security pip-export
+all: format pylint coverage check-security pip-export mypy
 
 build:
 	@uv build --wheel --sdist
@@ -42,6 +43,9 @@ check-security:
 pip-export:
 	@uv export --no-dev --no-emit-project --no-editable > requirements.txt
 	@uv export --no-emit-project --no-editable > requirements-dev.txt
+
+mypy:
+	@uv run mypy zapish_logger/
 
 pdf:
 	@uv run sphinx-build -b rinoh ./docs ./docs/_build/pdf
