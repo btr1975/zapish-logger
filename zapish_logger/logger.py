@@ -31,7 +31,7 @@ class _ExcludeErrorsFilter(logging.Filter):  # pylint: disable=too-few-public-me
 class LoggingConfig:
     """Class to build a dictionary logging config
 
-    :type log_format: Optional[str] = 'json'
+    :type log_format: str = 'json'
     :param log_format: Set the default log format
     :type custom_logging_formatters: Optional[Dict[str, str]] = None
     :param custom_logging_formatters: Logging formatters example: {'the_name': 'the format'}
@@ -66,9 +66,7 @@ class LoggingConfig:
         "G": 1000000000,
     }
 
-    def __init__(
-        self, log_format: Optional[str] = "json", custom_logging_formatters: Optional[Dict[str, str]] = None
-    ) -> None:
+    def __init__(self, log_format: str = "json", custom_logging_formatters: Optional[Dict[str, str]] = None) -> None:
         if custom_logging_formatters:
             self.__add_formatters(logging_formatters=custom_logging_formatters)
 
@@ -147,30 +145,30 @@ class LoggingConfig:
             "stream": sys.stdout,
         }
 
-        self._config["handlers"]["console_stderr"] = stderr_handler
-        self._config["root"]["handlers"].append("console_stderr")
-        self._config["handlers"]["console_stdout"] = stdout_handler
-        self._config["root"]["handlers"].append("console_stdout")
+        self._config["handlers"]["console_stderr"] = stderr_handler  # type: ignore[index]
+        self._config["root"]["handlers"].append("console_stderr")  # type: ignore[index]
+        self._config["handlers"]["console_stdout"] = stdout_handler  # type: ignore[index]
+        self._config["root"]["handlers"].append("console_stdout")  # type: ignore[index]
 
     def add_rotating_file_handler(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         path: str,
-        level: Optional[str] = "INFO",
+        level: str = "INFO",
         log_format: Optional[str] = None,
-        max_file_size: Optional[str] = "5M",
-        backup_count: Optional[int] = 3,
+        max_file_size: str = "5M",
+        backup_count: int = 3,
     ) -> None:
         """Add a rotating file logger
 
         :type path: String
         :param path: The full path to the log file Example: /tmp/some_log.log
-        :type level: Optional[str] = 'INFO'
+        :type level: str = 'INFO'
         :param level: To set the logging level
         :type log_format: Optional[str] = None
         :param log_format: To override the instantiated log_format
-        :type max_file_size: max_file_size: Optional[str] = '5M'
+        :type max_file_size: max_file_size: str = '5M'
         :param max_file_size: Maximum file size before rotation
-        :type backup_count: backup_count: Optional[int] = 3
+        :type backup_count: backup_count: int = 3
         :param backup_count: The number of backup files to keep
 
         :rtype: None
@@ -210,14 +208,14 @@ class LoggingConfig:
             "formatter": formatter,
             "filename": path,
             "encoding": "utf8",
-            "maxBytes": max_file_size_int * self.FILE_SIZE_OPTIONS.get(max_file_size_opt),
+            "maxBytes": max_file_size_int * self.FILE_SIZE_OPTIONS[max_file_size_opt],
             "backupCount": backup_count,
         }
 
-        self._config["handlers"]["file"] = handler
-        self._config["root"]["handlers"].append("file")
+        self._config["handlers"]["file"] = handler  # type: ignore[index]
+        self._config["root"]["handlers"].append("file")  # type: ignore[index]
 
-    def add_file_handler(self, path: str, level: Optional[str] = "INFO", log_format: Optional[str] = None) -> None:
+    def add_file_handler(self, path: str, level: str = "INFO", log_format: Optional[str] = None) -> None:
         """Add a file logger
 
         :type path: String
@@ -250,8 +248,8 @@ class LoggingConfig:
             "encoding": "utf8",
         }
 
-        self._config["handlers"]["file"] = handler
-        self._config["root"]["handlers"].append("file")
+        self._config["handlers"]["file"] = handler  # type: ignore[index]
+        self._config["root"]["handlers"].append("file")  # type: ignore[index]
 
     def _validate_handlers(self) -> None:
         """Validate if a handler has been added
@@ -264,7 +262,7 @@ class LoggingConfig:
         if not self._config["handlers"]:
             raise KeyError("no handlers have been added!")
 
-        if not self._config["root"]["handlers"]:
+        if not self._config["root"]["handlers"]:  # type: ignore[index]
             raise KeyError("no handlers have been added!")
 
     def get_config(self) -> dict:
@@ -277,18 +275,16 @@ class LoggingConfig:
         return self._config
 
 
-def file_logger(
-    path: str, name: str, level: Optional[str] = "INFO", log_format: Optional[str] = "json"
-) -> logging.Logger:
+def file_logger(path: str, name: str, level: str = "INFO", log_format: str = "json") -> logging.Logger:
     """Function to get a file logger
 
     :type path: String
     :param path: The full path to the log file Example: /tmp/some_log.log
-    :type level: Optional[str] = 'INFO'
+    :type level: str = 'INFO'
     :param level: To set the logging level
     :type name: String
     :param name: The name of the logger
-    :type log_format: Optional[str] = 'json'
+    :type log_format: str = 'json'
     :param log_format: Set the log format
 
     :rtype: logging.Logger
@@ -301,12 +297,12 @@ def file_logger(
     return this_logger
 
 
-def console_logger(name: str, log_format: Optional[str] = "json") -> logging.Logger:
+def console_logger(name: str, log_format: str = "json") -> logging.Logger:
     """Function to get a console logger
 
     :type name: String
     :param name: The name of the logger
-    :type log_format: Optional[str] = 'json'
+    :type log_format: str = 'json'
     :param log_format: Set the log format
 
     :rtype: logging.Logger
@@ -319,18 +315,16 @@ def console_logger(name: str, log_format: Optional[str] = "json") -> logging.Log
     return this_logger
 
 
-def file_and_console_logger(
-    path: str, name: str, level: Optional[str] = "INFO", log_format: Optional[str] = "json"
-) -> logging.Logger:
+def file_and_console_logger(path: str, name: str, level: str = "INFO", log_format: str = "json") -> logging.Logger:
     """Function to get a rotating file and console logger
 
     :type path: String
     :param path: The full path to the log file Example: /tmp/some_log.log
-    :type level: Optional[str] = 'INFO'
+    :type level: str = 'INFO'
     :param level: To set the logging level
     :type name: String
     :param name: The name of the logger
-    :type log_format: Optional[str] = 'json'
+    :type log_format: str = 'json'
     :param log_format: Set the log format
 
     :rtype: logging.Logger
